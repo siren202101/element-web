@@ -19,7 +19,7 @@ jobs:
     - name: Set up Node.js
       uses: actions/setup-node@v3
       with:
-        node-version: '16'  # 可以根据需要修改 Node.js 版本
+        node-version: '20'  # 使用符合项目要求的 Node.js 版本 >=20.0.0
 
     # 安装依赖
     - name: Install dependencies
@@ -38,4 +38,4 @@ jobs:
       uses: ncipollo/release-action@v1
       with:
         artifacts: webapp.tar.gz
-        token: ${{ secrets.element_TOKEN }}
+        token: ${{ secrets.element_TOKEN }}  # 确保 token 使用的是 GitHub 提供的内置 token
