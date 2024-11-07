@@ -1,0 +1,41 @@
+name: Build and Release
+
+on:
+  workflow_dispatch:
+  push:
+    tags:
+      - 'v*'  # 监听版本标签（例如 v1.0.0）
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    # 检出代码
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    # 设置 Node.js 环境
+    - name: Set up Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: '16'  # 可以根据需要修改 Node.js 版本
+
+    # 安装依赖
+    - name: Install dependencies
+      run: yarn install
+
+    # 构建项目
+    - name: Build project
+      run: yarn build
+
+    # 打包构建输出
+    - name: Archive webapp directory
+      run: tar -czf webapp.tar.gz webapp
+
+    # 上传构建文件到 GitHub Releases
+    - name: Upload Release Asset
+      uses: ncipollo/release-action@v1
+      with:
+        artifacts: webapp.tar.gz
+        token: ${{ secrets.element_TOKEN }}
