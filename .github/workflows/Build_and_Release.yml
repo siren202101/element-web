@@ -1,10 +1,10 @@
 name: Build and Release
 
 on:
-  workflow_dispatch:
-  push:
-    tags:
-      - 'v*'  # 监听版本标签（例如 v1.0.0）
+  workflow_dispatch:  # 允许手动触发 workflow
+  push:  # 监听推送事件（包括普通推送）
+    branches:
+      - main  # 仅当推送到 main 分支时触发，或者你可以根据需要调整分支名
 
 jobs:
   build:
@@ -33,9 +33,15 @@ jobs:
     - name: Archive webapp directory
       run: tar -czf webapp.tar.gz webapp
 
+    # 生成动态标签，基于当前时间戳
+    - name: Generate dynamic tag
+      id: generate_tag
+      run: echo "tag=$(date +'%Y%m%d%H%M%S')" >> $GITHUB_ENV
+
     # 上传构建文件到 GitHub Releases
     - name: Upload Release Asset
       uses: ncipollo/release-action@v1
       with:
         artifacts: webapp.tar.gz
-        token: ${{ secrets.element_TOKEN }}  # 确保 token 使用的是 GitHub 提供的内置 token
+        token: ${{ secrets.element_TOKEN }}
+        tag: ${{ env.tag }}  # 使用生成的动态标签
