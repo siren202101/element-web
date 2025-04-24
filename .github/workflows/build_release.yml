@@ -44,4 +44,4 @@ jobs:
         with:
           files: ./dist/*  # 指定要上传的文件路径
         env:
-          GITHUB_TOKEN: ${{ secrets.RELEASE_TOKEN }}  # 使用自动生成的 GitHub Token
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # 使用自动生成的 GitHub Token
