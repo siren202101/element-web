@@ -50,6 +50,6 @@ jobs:
         uses: softprops/action-gh-release@v1  # 使用官方推荐的 action-gh-release 来创建发布版本
         with:
           tag_name: v1.0.${{ github.run_number }}  # 使用创建的标签
-          files: ./dist/*  # 指定要上传的文件路径
+          files: ./dist/*  # 如果构建输出目录是 dist，上传 dist 目录中的所有文件
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # 使用自动生成的 GitHub Token
