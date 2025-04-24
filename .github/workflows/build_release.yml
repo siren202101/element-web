@@ -38,22 +38,10 @@ jobs:
       - name: 检出代码
         uses: actions/checkout@v2
 
-      - name: 创建发布版本
+      - name: 创建并发布版本
         id: create_release
-        uses: gh-actions/create-release@v1  # 创建 GitHub 发布版本
+        uses: softprops/action-gh-release@v1  # 使用官方推荐的 action-gh-release 来创建发布版本
         with:
-          tag_name: v1.0.${{ github.run_number }}  # 使用 run_number 创建版本标签
-          release_name: 'Element Web 发布 v1.0.${{ github.run_number }}'
-          body: 'Element Web 构建版本发布'
-          draft: false  # 发布为正式版本
-          prerelease: false  # 标记为稳定版本
+          files: ./dist/*  # 指定要上传的文件路径
         env:
           GITHUB_TOKEN: ${{ secrets.RELEASE_TOKEN }}  # 使用自动生成的 GitHub Token
-
-      - name: 上传构建文件到发布版本
-        uses: gh-actions/upload-release-asset@v1  # 上传构建文件到 GitHub 发布版本
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}  # 获取创建发布时的上传 URL
-          asset_path: ./dist  # 构建文件夹路径
-          asset_name: element-web-dist-${{ github.run_number }}.tar.gz  # 上传的文件名
-          asset_content_type: application/gzip  # 指定内容类型
