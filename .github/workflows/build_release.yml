@@ -3,7 +3,7 @@ name: Build and Publish Element Web
 on:
   push:
     branches:
-      - main  # 在 main 分支推送时触发工作流
+      - main  # Trigger on push to main branch
   workflow_dispatch:
   pull_request:
     branches:
@@ -20,7 +20,7 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v2
         with:
-          node-version: '16'  # 设置 Node.js 版本
+          node-version: '16'  # Set Node.js version
 
       - name: Install dependencies
         run: |
@@ -28,43 +28,32 @@ jobs:
           yarn install
 
       - name: Build the project
-        run: yarn build  # 执行构建命令
-
-      - name: Upload built files as artifact
-        uses: actions/upload-artifact@v2
-        with:
-          name: element-web-build
-          path: ./dist  # 上传 dist 文件夹作为工件
+        run: yarn build  # Run the build command
 
   release:
     runs-on: ubuntu-latest
-    needs: build  # 只有在 build 任务完成后才会运行
+    needs: build  # Ensure the build job is completed first
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
 
-      - name: Download build artifact
-        uses: actions/download-artifact@v2
-        with:
-          name: element-web-build  # 下载先前上传的工件
-
       - name: Create release
         id: create_release
-        uses: gh-actions/create-release@v1  # 使用 GitHub Actions 创建发布版本
+        uses: gh-actions/create-release@v1  # Create a GitHub release
         with:
-          tag_name: v1.0.${{ github.run_number }}  # 设置版本号（这里以 run_number 为例）
+          tag_name: v1.0.${{ github.run_number }}  # Tag version using the run number
           release_name: 'Element Web Release v1.0.${{ github.run_number }}'
           body: 'Release of Element Web build.'
-          draft: false
-          prerelease: false
+          draft: false  # Make the release public
+          prerelease: false  # Mark as a stable release
         env:
-          GITHUB_TOKEN: ${{ secrets.RELEASE_TOKEN }}  # 使用自动生成的 GitHub Token
+          GITHUB_TOKEN: ${{ secrets.RELEASE_TOKEN }}  # Automatically provided by GitHub Actions
 
       - name: Upload build files to release
-        uses: gh-actions/upload-release-asset@v1  # 使用 GitHub Actions 上传构建的文件
+        uses: gh-actions/upload-release-asset@v1  # Upload the build files to the release
         with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./dist  # 构建文件目录
-          asset_name: element-web-dist-${{ github.run_number }}.tar.gz  # 上传的文件名
-          asset_content_type: application/gzip
+          upload_url: ${{ steps.create_release.outputs.upload_url }}  # Get the URL from the create_release step
+          asset_path: ./dist  # Path to the build folder
+          asset_name: element-web-dist-${{ github.run_number }}.tar.gz  # Name the asset
+          asset_content_type: application/gzip  # Specify content type
