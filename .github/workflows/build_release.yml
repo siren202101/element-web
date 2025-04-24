@@ -38,10 +38,18 @@ jobs:
       - name: 检出代码
         uses: actions/checkout@v2
 
+      - name: 创建 Git 标签
+        id: create_tag
+        run: |
+          VERSION_TAG=v1.0.${{ github.run_number }}  # 版本号使用 run_number
+          git tag $VERSION_TAG  # 创建一个标签
+          git push origin $VERSION_TAG  # 推送标签到远程仓库
+
       - name: 创建并发布版本
         id: create_release
         uses: softprops/action-gh-release@v1  # 使用官方推荐的 action-gh-release 来创建发布版本
         with:
+          tag_name: v1.0.${{ github.run_number }}  # 使用创建的标签
           files: ./dist/*  # 指定要上传的文件路径
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # 使用自动生成的 GitHub Token
